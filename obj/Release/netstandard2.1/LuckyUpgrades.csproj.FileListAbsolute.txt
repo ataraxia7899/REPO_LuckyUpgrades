@@ -1,0 +1,10 @@
+c:\Code\REPOShareMod\bin\Release\netstandard2.1\LuckyUpgrades.deps.json
+c:\Code\REPOShareMod\bin\Release\netstandard2.1\LuckyUpgrades.dll
+c:\Code\REPOShareMod\bin\Release\netstandard2.1\LuckyUpgrades.pdb
+c:\Code\REPOShareMod\obj\Release\netstandard2.1\LuckyUpgrades.csproj.AssemblyReference.cache
+c:\Code\REPOShareMod\obj\Release\netstandard2.1\LuckyUpgrades.GeneratedMSBuildEditorConfig.editorconfig
+c:\Code\REPOShareMod\obj\Release\netstandard2.1\LuckyUpgrades.AssemblyInfoInputs.cache
+c:\Code\REPOShareMod\obj\Release\netstandard2.1\LuckyUpgrades.AssemblyInfo.cs
+c:\Code\REPOShareMod\obj\Release\netstandard2.1\LuckyUpgrades.csproj.CoreCompileInputs.cache
+c:\Code\REPOShareMod\obj\Release\netstandard2.1\LuckyUpgrades.dll
+c:\Code\REPOShareMod\obj\Release\netstandard2.1\LuckyUpgrades.pdb

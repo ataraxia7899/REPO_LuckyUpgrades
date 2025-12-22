@@ -1,0 +1,9 @@
+{
+  "name": "LuckyUpgrades",
+  "version_number": "1.0.0",
+  "website_url": "https://github.com/REPOShareMod/LuckyUpgrades",
+  "description": "Probability-based upgrade sharing mod - when a player picks up an upgrade, other players may also receive it based on configured chance",
+  "dependencies": [
+    "BepInEx-BepInExPack-5.4.2100"
+  ]
+}

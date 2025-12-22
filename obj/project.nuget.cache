@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "OSxegytVpKg=",
+  "success": true,
+  "projectFilePath": "c:\\Code\\REPOShareMod\\LuckyUpgrades.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\atara\\.nuget\\packages\\netstandard.library.ref\\2.1.0\\netstandard.library.ref.2.1.0.nupkg.sha512"
+  ],
+  "logs": []
+}
