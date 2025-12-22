@@ -8,3 +8,4 @@ c:\Code\REPOShareMod\obj\Release\netstandard2.1\LuckyUpgrades.AssemblyInfo.cs
 c:\Code\REPOShareMod\obj\Release\netstandard2.1\LuckyUpgrades.csproj.CoreCompileInputs.cache
 c:\Code\REPOShareMod\obj\Release\netstandard2.1\LuckyUpgrades.dll
 c:\Code\REPOShareMod\obj\Release\netstandard2.1\LuckyUpgrades.pdb
+C:\Code\REPOShareMod\obj\Release\netstandard2.1\LuckyUpgrades.sourcelink.json

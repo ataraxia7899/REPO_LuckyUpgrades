@@ -117,5 +117,5 @@ MIT License
 
 ## Credits
 
-- Developed by: REPOShareMod
+- Developed by: ataraxia7899
 - Inspired by: SharedUpgrades mod

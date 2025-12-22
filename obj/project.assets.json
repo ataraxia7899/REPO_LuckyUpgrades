@@ -11,13 +11,13 @@
     "C:\\Users\\atara\\.nuget\\packages\\": {}
   },
   "project": {
-    "version": "1.0.0",
+    "version": "1.0.4",
     "restore": {
-      "projectUniqueName": "c:\\Code\\REPOShareMod\\LuckyUpgrades.csproj",
+      "projectUniqueName": "C:\\Code\\REPOShareMod\\LuckyUpgrades.csproj",
       "projectName": "LuckyUpgrades",
-      "projectPath": "c:\\Code\\REPOShareMod\\LuckyUpgrades.csproj",
+      "projectPath": "C:\\Code\\REPOShareMod\\LuckyUpgrades.csproj",
       "packagesPath": "C:\\Users\\atara\\.nuget\\packages\\",
-      "outputPath": "c:\\Code\\REPOShareMod\\obj\\",
+      "outputPath": "C:\\Code\\REPOShareMod\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\atara\\AppData\\Roaming\\NuGet\\NuGet.Config"

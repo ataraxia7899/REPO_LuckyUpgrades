@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Code\\REPOShareMod\\LuckyUpgrades.csproj": {}
+    "C:\\Code\\REPOShareMod\\LuckyUpgrades.csproj": {}
   },
   "projects": {
-    "c:\\Code\\REPOShareMod\\LuckyUpgrades.csproj": {
-      "version": "1.0.0",
+    "C:\\Code\\REPOShareMod\\LuckyUpgrades.csproj": {
+      "version": "1.0.4",
       "restore": {
-        "projectUniqueName": "c:\\Code\\REPOShareMod\\LuckyUpgrades.csproj",
+        "projectUniqueName": "C:\\Code\\REPOShareMod\\LuckyUpgrades.csproj",
         "projectName": "LuckyUpgrades",
-        "projectPath": "c:\\Code\\REPOShareMod\\LuckyUpgrades.csproj",
+        "projectPath": "C:\\Code\\REPOShareMod\\LuckyUpgrades.csproj",
         "packagesPath": "C:\\Users\\atara\\.nuget\\packages\\",
-        "outputPath": "c:\\Code\\REPOShareMod\\obj\\",
+        "outputPath": "C:\\Code\\REPOShareMod\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\atara\\AppData\\Roaming\\NuGet\\NuGet.Config"
