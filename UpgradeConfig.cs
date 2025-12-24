@@ -8,6 +8,8 @@ namespace LuckyUpgrades
     /// </summary>
     public class UpgradeConfig
     {
+        // 확률 계산을 위한 static Random 인스턴스
+        private static readonly System.Random _random = new System.Random();
         // === 전역 설정 (Global Settings) ===
         
         /// <summary>
@@ -15,10 +17,7 @@ namespace LuckyUpgrades
         /// </summary>
         public ConfigEntry<bool> ModEnabled { get; private set; }
 
-        /// <summary>
-        /// 호스트 전용 모드 실행 여부입니다.
-        /// </summary>
-        public ConfigEntry<bool> HostOnly { get; private set; }
+
 
         /// <summary>
         /// 모든 업그레이드에 단일 확률을 적용할지 여부입니다.
@@ -78,6 +77,26 @@ namespace LuckyUpgrades
         public ConfigEntry<int> ChanceToActivatePlayerGrabThrow { get; private set; }
 
         /// <summary>
+        /// 구르기 등반 업그레이드 공유 확률입니다.
+        /// </summary>
+        public ConfigEntry<int> ChanceToActivatePlayerTumbleClimb { get; private set; }
+
+        /// <summary>
+        /// 구르기 날개 업그레이드 공유 확률입니다.
+        /// </summary>
+        public ConfigEntry<int> ChanceToActivatePlayerTumbleWings { get; private set; }
+
+        /// <summary>
+        /// 웅크리기 휴식 업그레이드 공유 확률입니다.
+        /// </summary>
+        public ConfigEntry<int> ChanceToActivatePlayerCrouchRest { get; private set; }
+
+        /// <summary>
+        /// 데스헤드 배터리 업그레이드 공유 확률입니다.
+        /// </summary>
+        public ConfigEntry<int> ChanceToActivateDeathHeadBattery { get; private set; }
+
+        /// <summary>
         /// 지도 플레이어 수 관련 업그레이드 공유 확률입니다.
         /// </summary>
         public ConfigEntry<int> ChanceToActivateMapPlayerCount { get; private set; }
@@ -96,12 +115,7 @@ namespace LuckyUpgrades
                 "Enable or disable the mod"
             );
 
-            HostOnly = config.Bind(
-                "Global",
-                "HostOnly",
-                true,
-                "Only the host will run the mod logic (recommended: true)"
-            );
+
 
             UseOneChanceForAll = config.Bind(
                 "Global",
@@ -220,6 +234,46 @@ namespace LuckyUpgrades
                     new AcceptableValueRange<int>(0, 100)
                 )
             );
+
+            ChanceToActivatePlayerTumbleClimb = config.Bind(
+                "SpecificUpgrades",
+                "ChanceToActivatePlayerTumbleClimb",
+                25,
+                new ConfigDescription(
+                    "% Chance to activate the Tumble Climb upgrade for every player",
+                    new AcceptableValueRange<int>(0, 100)
+                )
+            );
+
+            ChanceToActivatePlayerTumbleWings = config.Bind(
+                "SpecificUpgrades",
+                "ChanceToActivatePlayerTumbleWings",
+                25,
+                new ConfigDescription(
+                    "% Chance to activate the Tumble Wings upgrade for every player",
+                    new AcceptableValueRange<int>(0, 100)
+                )
+            );
+
+            ChanceToActivatePlayerCrouchRest = config.Bind(
+                "SpecificUpgrades",
+                "ChanceToActivatePlayerCrouchRest",
+                25,
+                new ConfigDescription(
+                    "% Chance to activate the Crouch Rest upgrade for every player",
+                    new AcceptableValueRange<int>(0, 100)
+                )
+            );
+
+            ChanceToActivateDeathHeadBattery = config.Bind(
+                "SpecificUpgrades",
+                "ChanceToActivateDeathHeadBattery",
+                25,
+                new ConfigDescription(
+                    "% Chance to activate the Death Head Battery upgrade for every player",
+                    new AcceptableValueRange<int>(0, 100)
+                )
+            );
         }
 
         /// <summary>
@@ -245,8 +299,16 @@ namespace LuckyUpgrades
                 return ChanceToActivatePlayerSprintSpeed.Value;
             if (typeLower.Contains("jump"))
                 return ChanceToActivatePlayerExtraJump.Value;
-            if (typeLower.Contains("tumble") || typeLower.Contains("launch"))
+            if (typeLower.Contains("tumblelaunch") || typeLower.Contains("launch"))
                 return ChanceToActivatePlayerTumbleLaunch.Value;
+            if (typeLower.Contains("tumbleclimb") || typeLower.Contains("climb"))
+                return ChanceToActivatePlayerTumbleClimb.Value;
+            if (typeLower.Contains("tumblewing") || typeLower.Contains("wing"))
+                return ChanceToActivatePlayerTumbleWings.Value;
+            if (typeLower.Contains("crouch") || typeLower.Contains("rest"))
+                return ChanceToActivatePlayerCrouchRest.Value;
+            if (typeLower.Contains("deathhead") || typeLower.Contains("battery"))
+                return ChanceToActivateDeathHeadBattery.Value;
             if (typeLower.Contains("range"))
                 return ChanceToActivatePlayerGrabRange.Value;
             if (typeLower.Contains("strength"))
@@ -269,7 +331,7 @@ namespace LuckyUpgrades
             if (ChanceToWasteUpgrade.Value <= 0)
                 return false;
 
-            int roll = new System.Random().Next(0, 100);
+            int roll = _random.Next(0, 100);
             return roll < ChanceToWasteUpgrade.Value;
         }
     }

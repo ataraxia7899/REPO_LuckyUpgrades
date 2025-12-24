@@ -4,39 +4,28 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <AssemblyName>LuckyUpgrades</AssemblyName>
     <RootNamespace>LuckyUpgrades</RootNamespace>
-    <Version>1.0.5</Version>
+    <Version>1.1.0</Version>
     <Authors>REPOShareMod</Authors>
     <Description>R.E.P.O 업그레이드 확률 공유 모드 - 스탯 아이템 획득 시 설정된 확률에 따라 다른 플레이어에게도 적용</Description>
     <LangVersion>latest</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RestoreAdditionalProjectSources>
+      https://api.nuget.org/v3/index.json;
+      https://nuget.bepinex.dev/v3/index.json;
+      https://nuget.samboy.dev/v3/index.json
+    </RestoreAdditionalProjectSources>
   </PropertyGroup>
 
-  <!-- 게임 DLL 참조 -->
+  <!-- NuGet 패키지 참조 (작동하는 모드와 동일한 패턴) -->
   <ItemGroup>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>dev\Assembly-CSharp.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="UnityEngine">
-      <HintPath>dev\UnityEngine.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>dev\UnityEngine.CoreModule.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
+    <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
+    <PackageReference Include="BepInEx.Core" Version="5.*" />
+    <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" />
+    <PackageReference Include="R.E.P.O.GameLibs.Steam" Version="0.3.0-ngd.0" PrivateAssets="all" />
   </ItemGroup>
-
-  <!-- BepInEx 참조 -->
-  <ItemGroup>
-    <Reference Include="BepInEx">
-      <HintPath>dev\BepInEx.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="0Harmony">
-      <HintPath>dev\0Harmony.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
+  
+  <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all" />
   </ItemGroup>
 
 </Project>

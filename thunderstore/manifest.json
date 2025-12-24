@@ -1,9 +1,9 @@
 {
   "name": "LuckyUpgrades",
-  "version_number": "1.0.5",
+  "version_number": "1.1.0",
   "website_url": "https://github.com/ataraxia7899/REPO_LuckyUpgrades",
-  "description": "Probability-based upgrade sharing mod for R.E.P.O.",
+  "description": "Probability-based upgrade sharing mod for R.E.P.O. All players must install for sharing to work.",
   "dependencies": [
-    "bbepis-BepInExPack-5.4.2100"
+    "BepInEx-BepInExPack-5.4.2100"
   ]
 }

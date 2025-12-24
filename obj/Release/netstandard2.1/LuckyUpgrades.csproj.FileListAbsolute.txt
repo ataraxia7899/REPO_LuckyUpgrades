@@ -9,3 +9,4 @@ c:\Code\REPOShareMod\obj\Release\netstandard2.1\LuckyUpgrades.csproj.CoreCompile
 c:\Code\REPOShareMod\obj\Release\netstandard2.1\LuckyUpgrades.dll
 c:\Code\REPOShareMod\obj\Release\netstandard2.1\LuckyUpgrades.pdb
 C:\Code\REPOShareMod\obj\Release\netstandard2.1\LuckyUpgrades.sourcelink.json
+C:\Code\REPOShareMod\obj\Release\netstandard2.1\MyPluginInfo.cs
