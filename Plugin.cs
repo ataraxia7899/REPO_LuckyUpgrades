@@ -37,7 +37,7 @@ public class Plugin : BaseUnityPlugin
     }
 
     /// <summary>
-    /// 로컬 플레이어의 SteamID를 가져옵니다.
+    /// Gets the local player's SteamID.
     /// </summary>
     private static string GetMySteamID()
     {
@@ -52,7 +52,7 @@ public class Plugin : BaseUnityPlugin
         return _mySteamID;
     }
 
-    // PunManager 업그레이드 패치들
+    // PunManager upgrade patches
     [HarmonyPatch(typeof(PunManager), "UpgradePlayerHealth")]
     [HarmonyPostfix]
     public static void UpgradePlayerHealth_Postfix(string _steamID, int value)
@@ -210,40 +210,26 @@ public class Plugin : BaseUnityPlugin
     }
 
     /// <summary>
-    /// 다른 플레이어가 업그레이드를 획득했을 때, 확률에 따라 자기 자신에게도 적용합니다.
-    /// 모든 플레이어가 모드를 설치해야 작동합니다.
+    /// When another player gets an upgrade, apply it to self based on probability.
+    /// Requires all players to have the mod installed.
     /// </summary>
     private static void ApplySharedUpgradeToSelf(string upgradeType, string sourceSteamID, int amount, Action<int> applyToSelf)
     {
         try
         {
-            // 재귀 호출 방지
+            // Prevent recursive calls
             if (_isApplyingSharedUpgrade) return;
-            
-            // 모드 비활성화 체크
-            if (!UpgradeConfiguration.ModEnabled.Value) return;
 
-            // 내 SteamID 가져오기
+            // Get my SteamID
             string mySteamID = GetMySteamID();
             if (string.IsNullOrEmpty(mySteamID)) return;
 
-            // 내가 먹은 아이템이면 무시 (이미 적용됨)
+            // Ignore if I picked up the item (already applied)
             if (mySteamID == sourceSteamID) return;
 
-            Logger.LogInfo($"[LuckyUpgrades] ★ 다른 플레이어 업그레이드 감지! {upgradeType}: {sourceSteamID} +{amount}");
-
-            // 업그레이드 소멸 체크
-            if (UpgradeConfiguration.ShouldWasteUpgrade())
-            {
-                Logger.LogInfo("[LuckyUpgrades] 업그레이드 소멸!");
-                return;
-            }
-
-            // 공유 확률 가져오기
+            // Get share chance and roll
             int shareChance = UpgradeConfiguration.GetShareChance(upgradeType);
             int roll = _random.Next(100);
-
-            Logger.LogInfo($"[LuckyUpgrades] 확률 체크: {roll} < {shareChance}?");
 
             if (roll < shareChance)
             {
@@ -251,21 +237,17 @@ public class Plugin : BaseUnityPlugin
                 {
                     _isApplyingSharedUpgrade = true;
                     applyToSelf(amount);
-                    Logger.LogInfo($"[LuckyUpgrades] ★★ 나에게 {upgradeType} +{amount} 공유 적용됨!");
+                    Logger.LogInfo($"[LuckyUpgrades] Shared upgrade applied: {upgradeType} +{amount} (roll: {roll} < {shareChance})");
                 }
                 finally
                 {
                     _isApplyingSharedUpgrade = false;
                 }
             }
-            else
-            {
-                Logger.LogInfo($"[LuckyUpgrades] 확률 실패 - 공유 안 됨");
-            }
         }
         catch (Exception ex)
         {
-            Logger.LogError($"[LuckyUpgrades] ApplySharedUpgradeToSelf 예외: {ex.Message}");
+            Logger.LogError($"[LuckyUpgrades] Error in ApplySharedUpgradeToSelf: {ex.Message}");
         }
     }
 }

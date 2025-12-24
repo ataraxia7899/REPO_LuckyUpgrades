@@ -9,16 +9,13 @@ When a player picks up an upgrade item, there is a configurable chance that **AL
 ## ⚠️ Important Notice
 
 > **All players in the lobby MUST have this mod installed for it to work correctly!**
-> 
-> This mod works by having each player's game detect when others pick up upgrades, then apply the shared upgrade locally.
 
 ---
 
 ## Features
 
 - 🎲 **Probability-based sharing**: Configurable share chance for each upgrade type
-- ⚙️ **Flexible settings**: Global or per-upgrade probability settings
--  **Waste chance**: Optional chance to waste upgrades (no one gets it)
+- ⚙️ **Per-upgrade settings**: Set different chances for each upgrade
 - 🔧 **13 Upgrades supported**: All player upgrades are supported
 
 ---
@@ -27,7 +24,7 @@ When a player picks up an upgrade item, there is a configurable chance that **AL
 
 | Upgrade | Config Name | Default |
 |---------|-------------|---------|
-| Health | ChanceToActivatePlayerHealth | 50% |
+| Health | ChanceToActivatePlayerHealth | 25% |
 | Energy (Stamina) | ChanceToActivatePlayerEnergy | 25% |
 | Sprint Speed | ChanceToActivatePlayerSprintSpeed | 25% |
 | Extra Jump | ChanceToActivatePlayerExtraJump | 25% |
@@ -64,26 +61,15 @@ After launching the game, a config file will be created at:
 `BepInEx/config/LuckyUpgrades.cfg`
 
 ```ini
-[Global]
+[Upgrades]
 
-## Enable or disable the mod
-ModEnabled = true
+## % Chance to share the Health upgrade (0-100)
+ChanceToActivatePlayerHealth = 25
 
-## If true, the GlobalChanceToActivate will be used for all upgrades
-UseOneChanceForAll = true
-
-## % Chance to activate the upgrade for every player (0-100)
-GlobalChanceToActivate = 25
-
-## % Chance to waste the upgrade and activate it for nobody (0-100)
-ChanceToWasteUpgrade = 0
-
-[SpecificUpgrades]
-
-## Individual upgrade chances (used when UseOneChanceForAll = false)
-ChanceToActivatePlayerHealth = 50
+## % Chance to share the Energy upgrade (0-100)
 ChanceToActivatePlayerEnergy = 25
-# ... (other upgrades with default 25%)
+
+## ... (all other upgrades with default 25%)
 ```
 
 ---
@@ -92,9 +78,8 @@ ChanceToActivatePlayerEnergy = 25
 
 1. Player A picks up an upgrade item
 2. **All clients** detect this via Harmony patches on `PunManager.UpgradeXXX()`
-3. Each client checks if the upgrade should be wasted (ChanceToWasteUpgrade)
-4. Each client rolls against the configured chance
-5. If successful, the client applies the upgrade to **themselves**
+3. Each client rolls against the configured chance
+4. If successful, the client applies the upgrade to **themselves**
 
 ---
 
@@ -103,7 +88,7 @@ ChanceToActivatePlayerEnergy = 25
 - **R.E.P.O** v0.3.2+
 - **BepInEx 5.4.x**
 - **All players must have the mod installed**
-- May conflict with other upgrade sync mods (e.g., SharedUpgrades)
+- May conflict with other upgrade sync mods
 
 ---
 
@@ -111,11 +96,9 @@ ChanceToActivatePlayerEnergy = 25
 
 ### ⚠️ Upgrading from v1.0.x
 
-If you are upgrading from v1.0.x, **delete your old config file** and let the mod create a new one:
+**Delete your old config file** and let the mod create a new one:
 1. Delete `BepInEx/config/LuckyUpgrades.cfg`
 2. Launch the game to generate a new config
-
-This is required because the `HostOnly` setting has been removed in v1.1.0.
 
 ### Mod not working
 1. Verify BepInEx is installed correctly
@@ -123,34 +106,21 @@ This is required because the `HostOnly` setting has been removed in v1.1.0.
 3. **Ensure ALL players have the mod installed**
 
 ### Upgrade not shared
-- Check `ModEnabled = true` in config
 - Ensure probability values are between 0-100
-- If using `UseOneChanceForAll = false`, check individual upgrade settings
 - **Make sure all players have the same mod version**
-
-### Log Messages
-Look for these log entries:
-```
-[LuckyUpgrades] ★ 다른 플레이어 업그레이드 감지! Health: [SteamID] +1
-[LuckyUpgrades] 확률 체크: 25 < 100?
-[LuckyUpgrades] ★★ 나에게 Health +1 공유 적용됨!
-```
 
 ---
 
 ## Changelog
 
 ### v1.1.0
-- **Breaking Change**: Removed `HostOnly` setting - ALL players must now install the mod
-- Changed synchronization method: Each client applies upgrades locally when detecting others' upgrades
-- Improved network compatibility
-- Delete old config file after upgrading
+- **Breaking Change**: ALL players must now install the mod
+- Simplified config: Removed global settings, only per-upgrade chances remain
+- Changed synchronization method: Each client applies upgrades locally
 
 ### v1.0.5
 - Changed patching method: Now patches `PunManager.UpgradeXXX()` directly
-- Added 4 new upgrade types: TumbleClimb, TumbleWings, CrouchRest, DeathHeadBattery
-- Improved error handling and null checks
-- Fixed Random instance issue for consistent probability
+- Added 4 new upgrade types
 
 ---
 
@@ -163,4 +133,3 @@ MIT License
 ## Credits
 
 - Developed by: **ataraxia7899**
-- Inspired by: SharedUpgrades mod
