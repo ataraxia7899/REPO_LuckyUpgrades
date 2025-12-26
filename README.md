@@ -1,6 +1,6 @@
 # LuckyUpgrades
 
-**R.E.P.O Upgrade Sharing Mod**
+[**R.E.P.O Upgrade Sharing Mod**](https://thunderstore.io/c/repo/p/ataraxia7899/LuckyUpgrades/)
 
 When a player picks up an upgrade item, there is a configurable chance that **ALL other players** will also receive the same upgrade.
 
