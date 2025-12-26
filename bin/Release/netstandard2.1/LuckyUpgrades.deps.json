@@ -7,7 +7,7 @@
   "targets": {
     ".NETStandard,Version=v2.1": {},
     ".NETStandard,Version=v2.1/": {
-      "LuckyUpgrades/1.1.1": {
+      "LuckyUpgrades/1.1.2": {
         "dependencies": {
           "BepInEx.Core": "5.4.21",
           "R.E.P.O.GameLibs.Steam": "0.3.0-ngd.0"
@@ -470,7 +470,7 @@
     }
   },
   "libraries": {
-    "LuckyUpgrades/1.1.1": {
+    "LuckyUpgrades/1.1.2": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

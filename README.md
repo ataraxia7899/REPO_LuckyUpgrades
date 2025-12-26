@@ -113,6 +113,11 @@ ChanceToActivatePlayerEnergy = 25
 
 ## Changelog
 
+### v1.1.2
+- **Bug Fix**: Fixed shared upgrades not persisting across level transitions for non-host players
+- Implemented proper level change detection using `RunManager.levelCurrent`
+- Added separate `UpgradeReapplyRunner` MonoBehaviour for reliable Update() execution
+
 ### v1.1.1
 - **Bug Fix**: Shared upgrades now persist across level changes
 - Added upgrade tracking system that reapplies shared upgrades after level transitions
