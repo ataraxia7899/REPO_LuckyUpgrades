@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("R.E.P.O 업그레이드 확률 공유 모드 - 스탯 아이템 획득 시 설정된 확률에 따라 다른 플레이어에게도 적용")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.1.1.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.1.1+0ce7e53e4421a3eb7ff41c828ab114660b1aeabb")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.1.1+ca59b331f55f11cc3595fe4322be2749942cecf2")]
 [assembly: System.Reflection.AssemblyProductAttribute("LuckyUpgrades")]
 [assembly: System.Reflection.AssemblyTitleAttribute("LuckyUpgrades")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.1.1.0")]

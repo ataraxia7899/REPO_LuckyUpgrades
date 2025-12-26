@@ -384,13 +384,6 @@ public class Plugin : BaseUnityPlugin
         }
     }
 
-    // Clear tracked upgrades when leaving the game/lobby
-    [HarmonyPatch(typeof(RunManager), "LeaveGame")]
-    [HarmonyPostfix]
-    public static void LeaveGame_Postfix()
-    {
-        _sharedUpgrades.Clear();
-        _mySteamID = null;
-        Logger.LogInfo("[LuckyUpgrades] Left game, cleared tracked upgrades.");
-    }
+    // Note: Tracked upgrades are automatically cleared when game restarts
+    // since _sharedUpgrades is a static field that resets on plugin reload
 }
