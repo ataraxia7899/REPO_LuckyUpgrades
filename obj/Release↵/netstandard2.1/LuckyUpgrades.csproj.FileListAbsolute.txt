@@ -1,0 +1,12 @@
+C:\Code\REPO_LuckyUpgrades\bin\Release↵\netstandard2.1\LuckyUpgrades.deps.json
+C:\Code\REPO_LuckyUpgrades\bin\Release↵\netstandard2.1\LuckyUpgrades.dll
+C:\Code\REPO_LuckyUpgrades\bin\Release↵\netstandard2.1\LuckyUpgrades.pdb
+C:\Code\REPO_LuckyUpgrades\obj\Release↵\netstandard2.1\LuckyUpgrades.csproj.AssemblyReference.cache
+C:\Code\REPO_LuckyUpgrades\obj\Release↵\netstandard2.1\MyPluginInfo.cs
+C:\Code\REPO_LuckyUpgrades\obj\Release↵\netstandard2.1\LuckyUpgrades.GeneratedMSBuildEditorConfig.editorconfig
+C:\Code\REPO_LuckyUpgrades\obj\Release↵\netstandard2.1\LuckyUpgrades.AssemblyInfoInputs.cache
+C:\Code\REPO_LuckyUpgrades\obj\Release↵\netstandard2.1\LuckyUpgrades.AssemblyInfo.cs
+C:\Code\REPO_LuckyUpgrades\obj\Release↵\netstandard2.1\LuckyUpgrades.csproj.CoreCompileInputs.cache
+C:\Code\REPO_LuckyUpgrades\obj\Release↵\netstandard2.1\LuckyUpgrades.sourcelink.json
+C:\Code\REPO_LuckyUpgrades\obj\Release↵\netstandard2.1\LuckyUpgrades.dll
+C:\Code\REPO_LuckyUpgrades\obj\Release↵\netstandard2.1\LuckyUpgrades.pdb

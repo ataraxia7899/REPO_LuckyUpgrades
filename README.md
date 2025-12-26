@@ -113,6 +113,10 @@ ChanceToActivatePlayerEnergy = 25
 
 ## Changelog
 
+### v1.1.1
+- **Bug Fix**: Shared upgrades now persist across level changes
+- Added upgrade tracking system that reapplies shared upgrades after level transitions
+
 ### v1.1.0
 - **Breaking Change**: ALL players must now install the mod
 - Simplified config: Removed global settings, only per-upgrade chances remain
@@ -133,3 +137,4 @@ MIT License
 ## Credits
 
 - Developed by: **ataraxia7899**
+- Contact: ataraxia7899@gmail.com (Please contact me if any issues arise.)

@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
 using Photon.Pun;
+using UnityEngine;
 
 namespace LuckyUpgrades;
 
@@ -18,6 +20,9 @@ public class Plugin : BaseUnityPlugin
     private static bool _isApplyingSharedUpgrade = false;
     private static readonly System.Random _random = new System.Random();
     private static string _mySteamID = null;
+
+    // Dictionary to track shared upgrades for reapplication on level change
+    private static readonly Dictionary<string, int> _sharedUpgrades = new Dictionary<string, int>();
 
     private Harmony harmony;
 
@@ -50,6 +55,130 @@ public class Plugin : BaseUnityPlugin
             }
         }
         return _mySteamID;
+    }
+
+    /// <summary>
+    /// Reapplies all tracked shared upgrades after level change.
+    /// </summary>
+    private static void ReapplySharedUpgrades()
+    {
+        if (_sharedUpgrades.Count == 0) return;
+
+        string myID = GetMySteamID();
+        if (string.IsNullOrEmpty(myID)) return;
+
+        Logger.LogInfo($"[LuckyUpgrades] Reapplying {_sharedUpgrades.Count} shared upgrade types...");
+
+        try
+        {
+            _isApplyingSharedUpgrade = true;
+
+            foreach (var upgrade in _sharedUpgrades)
+            {
+                string upgradeType = upgrade.Key;
+                int amount = upgrade.Value;
+
+                if (amount <= 0) continue;
+
+                switch (upgradeType)
+                {
+                    case "Health":
+                        for (int i = 0; i < amount; i++)
+                            PunManager.instance.UpgradePlayerHealth(myID, 1);
+                        break;
+                    case "Energy":
+                        for (int i = 0; i < amount; i++)
+                            PunManager.instance.UpgradePlayerEnergy(myID, 1);
+                        break;
+                    case "ExtraJump":
+                        for (int i = 0; i < amount; i++)
+                            PunManager.instance.UpgradePlayerExtraJump(myID, 1);
+                        break;
+                    case "GrabRange":
+                        for (int i = 0; i < amount; i++)
+                            PunManager.instance.UpgradePlayerGrabRange(myID, 1);
+                        break;
+                    case "GrabStrength":
+                        for (int i = 0; i < amount; i++)
+                            PunManager.instance.UpgradePlayerGrabStrength(myID, 1);
+                        break;
+                    case "GrabThrow":
+                        for (int i = 0; i < amount; i++)
+                            PunManager.instance.UpgradePlayerThrowStrength(myID, 1);
+                        break;
+                    case "SprintSpeed":
+                        for (int i = 0; i < amount; i++)
+                            PunManager.instance.UpgradePlayerSprintSpeed(myID, 1);
+                        break;
+                    case "TumbleLaunch":
+                        for (int i = 0; i < amount; i++)
+                            PunManager.instance.UpgradePlayerTumbleLaunch(myID, 1);
+                        break;
+                    case "MapPlayerCount":
+                        for (int i = 0; i < amount; i++)
+                            PunManager.instance.UpgradeMapPlayerCount(myID, 1);
+                        break;
+                    case "TumbleClimb":
+                        for (int i = 0; i < amount; i++)
+                            PunManager.instance.UpgradePlayerTumbleClimb(myID, 1);
+                        break;
+                    case "TumbleWings":
+                        for (int i = 0; i < amount; i++)
+                            PunManager.instance.UpgradePlayerTumbleWings(myID, 1);
+                        break;
+                    case "CrouchRest":
+                        for (int i = 0; i < amount; i++)
+                            PunManager.instance.UpgradePlayerCrouchRest(myID, 1);
+                        break;
+                    case "DeathHeadBattery":
+                        for (int i = 0; i < amount; i++)
+                            PunManager.instance.UpgradeDeathHeadBattery(myID, 1);
+                        break;
+                }
+
+                Logger.LogInfo($"[LuckyUpgrades] Reapplied: {upgradeType} +{amount}");
+            }
+        }
+        finally
+        {
+            _isApplyingSharedUpgrade = false;
+        }
+    }
+
+    /// <summary>
+    /// Tracks a shared upgrade for later reapplication.
+    /// </summary>
+    private static void TrackSharedUpgrade(string upgradeType, int amount)
+    {
+        if (_sharedUpgrades.ContainsKey(upgradeType))
+        {
+            _sharedUpgrades[upgradeType] += amount;
+        }
+        else
+        {
+            _sharedUpgrades[upgradeType] = amount;
+        }
+    }
+
+    // Patch for level change detection - RunManager.ChangeLevel is called on level transitions
+    [HarmonyPatch(typeof(RunManager), "ChangeLevel")]
+    [HarmonyPostfix]
+    public static void ChangeLevel_Postfix()
+    {
+        // Delay reapplication slightly to ensure level is fully loaded
+        if (_sharedUpgrades.Count > 0)
+        {
+            Logger.LogInfo("[LuckyUpgrades] Level changed, scheduling upgrade reapplication...");
+            // Use Unity's delayed call
+            Instance?.StartCoroutine(ReapplyAfterDelay());
+        }
+    }
+
+    private static System.Collections.IEnumerator ReapplyAfterDelay()
+    {
+        // Wait for 2 seconds after level change to ensure everything is loaded
+        yield return new WaitForSeconds(2f);
+        ReapplySharedUpgrades();
     }
 
     // PunManager upgrade patches
@@ -211,7 +340,7 @@ public class Plugin : BaseUnityPlugin
 
     /// <summary>
     /// When another player gets an upgrade, apply it to self based on probability.
-    /// Requires all players to have the mod installed.
+    /// Tracks the upgrade for reapplication on level change.
     /// </summary>
     private static void ApplySharedUpgradeToSelf(string upgradeType, string sourceSteamID, int amount, Action<int> applyToSelf)
     {
@@ -237,6 +366,10 @@ public class Plugin : BaseUnityPlugin
                 {
                     _isApplyingSharedUpgrade = true;
                     applyToSelf(amount);
+                    
+                    // Track the shared upgrade for reapplication on level change
+                    TrackSharedUpgrade(upgradeType, amount);
+                    
                     Logger.LogInfo($"[LuckyUpgrades] Shared upgrade applied: {upgradeType} +{amount} (roll: {roll} < {shareChance})");
                 }
                 finally
@@ -249,5 +382,15 @@ public class Plugin : BaseUnityPlugin
         {
             Logger.LogError($"[LuckyUpgrades] Error in ApplySharedUpgradeToSelf: {ex.Message}");
         }
+    }
+
+    // Clear tracked upgrades when leaving the game/lobby
+    [HarmonyPatch(typeof(RunManager), "LeaveGame")]
+    [HarmonyPostfix]
+    public static void LeaveGame_Postfix()
+    {
+        _sharedUpgrades.Clear();
+        _mySteamID = null;
+        Logger.LogInfo("[LuckyUpgrades] Left game, cleared tracked upgrades.");
     }
 }

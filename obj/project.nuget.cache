@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "BzABfyf9qU8=",
+  "dgSpecHash": "vWaLT9zzOu8=",
   "success": true,
-  "projectFilePath": "C:\\Code\\REPOShareMod\\LuckyUpgrades.csproj",
+  "projectFilePath": "C:\\Code\\REPO_LuckyUpgrades\\LuckyUpgrades.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\atara\\.nuget\\packages\\bepinex.analyzers\\1.0.8\\bepinex.analyzers.1.0.8.nupkg.sha512",
     "C:\\Users\\atara\\.nuget\\packages\\bepinex.baselib\\5.4.20\\bepinex.baselib.5.4.20.nupkg.sha512",
