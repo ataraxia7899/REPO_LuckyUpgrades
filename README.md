@@ -1,6 +1,7 @@
 <div align="center">
 
-**🌐 Language / 언어**: [English](README.md) | [한국어](README.ko.md)
+### 🌐 README Language : [English](README.md) | [한국어](README.ko.md)
+<br>
 
 # LuckyUpgrades
 
