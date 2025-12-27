@@ -1,5 +1,7 @@
 <div align="center">
 
+**🌐 Language / 언어**: [English](README.md) | [한국어](README.ko.md)
+
 # LuckyUpgrades
 
 [![Language](https://img.shields.io/badge/Language-C%23-239120?logo=c-sharp&logoColor=white)](https://learn.microsoft.com/dotnet/csharp/)
