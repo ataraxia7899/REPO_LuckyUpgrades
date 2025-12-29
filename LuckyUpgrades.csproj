@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <AssemblyName>LuckyUpgrades</AssemblyName>
     <RootNamespace>LuckyUpgrades</RootNamespace>
-    <Version>1.1.3</Version>
+    <Version>1.1.4</Version>
     <Authors>REPOShareMod</Authors>
     <Description>R.E.P.O 업그레이드 확률 공유 모드 - 스탯 아이템 획득 시 설정된 확률에 따라 다른 플레이어에게도 적용</Description>
     <LangVersion>latest</LangVersion>
