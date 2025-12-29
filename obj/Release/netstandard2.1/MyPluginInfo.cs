@@ -4,6 +4,6 @@ namespace LuckyUpgrades
     {
         public const string PLUGIN_GUID = "LuckyUpgrades";
         public const string PLUGIN_NAME = "LuckyUpgrades";
-        public const string PLUGIN_VERSION = "1.1.3";
+        public const string PLUGIN_VERSION = "1.1.4";
     }
 }

@@ -13,11 +13,11 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("REPOShareMod")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("R.E.P.O 업그레이드 확률 공유 모드 - 스탯 아이템 획득 시 설정된 확률에 따라 다른 플레이어에게도 적용")]
-[assembly: System.Reflection.AssemblyFileVersionAttribute("1.1.3.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.1.3+43e9ac0784db0056072a03b0e63092d65b7cc401")]
+[assembly: System.Reflection.AssemblyFileVersionAttribute("1.1.4.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.1.4+aef8e75829452a2887bb8f6d857bd2fb67c17afb")]
 [assembly: System.Reflection.AssemblyProductAttribute("LuckyUpgrades")]
 [assembly: System.Reflection.AssemblyTitleAttribute("LuckyUpgrades")]
-[assembly: System.Reflection.AssemblyVersionAttribute("1.1.3.0")]
+[assembly: System.Reflection.AssemblyVersionAttribute("1.1.4.0")]
 
 // MSBuild WriteCodeFragment 클래스에서 생성되었습니다.
 
