@@ -34,6 +34,16 @@ When a player picks up an upgrade item, there is a configurable chance that **AL
 
 ---
 
+### 🎬 Quick Guide
+
+<div align="center">
+
+![LuckyUpgrades Quick Guide](https://github.com/user-attachments/assets/3a397b21-74c2-4944-a70a-9a4010520d2f)
+
+</div>
+
+---
+
 ### ✨ Features
 
 * 🎲 **Probability-based sharing**: Configurable share chance for each upgrade type
