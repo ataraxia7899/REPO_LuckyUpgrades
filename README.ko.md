@@ -38,7 +38,7 @@
 
 <div align="center">
 
-![LuckyUpgrades 간단 가이드](https://github.com/user-attachments/assets/3a397b21-74c2-4944-a70a-9a4010520d2f)
+![LuckyUpgrades 간단 가이드](https://raw.githubusercontent.com/ataraxia7899/REPO_LuckyUpgrades/main/QuickGuide.png)
 
 </div>
 
