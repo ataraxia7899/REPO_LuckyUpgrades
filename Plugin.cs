@@ -423,6 +423,14 @@ public class UpgradeReapplyRunner : MonoBehaviour
             {
                 _pendingReapply = false;
                 
+                // 호스트(MasterClient)인 경우 재적용 건너뛰기
+                // 호스트는 공유 업그레이드가 서버에 저장되어 레벨 전환 시에도 유지됨
+                if (PhotonNetwork.IsMasterClient)
+                {
+                    Plugin.Logger.LogInfo("[LuckyUpgrades] Host detected, skipping reapply (upgrades persist on host)");
+                    return;
+                }
+                
                 var localPlayer = SemiFunc.PlayerAvatarLocal();
                 if (localPlayer != null)
                 {
