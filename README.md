@@ -102,3 +102,18 @@ ChanceToActivatePlayerHealth = 25
 ChanceToActivatePlayerEnergy = 25
 
 ## ... (all other upgrades with default 25%)
+```
+
+---
+
+### 📝 Changelog
+
+| Version | Changes |
+| :--- | :--- |
+| **1.1.5** | Fixed host upgrade duplication bug on level transition |
+| **1.1.4** | Added Quick Guide image to README |
+| **1.1.3** | Documentation update |
+| **1.1.2** | Fixed non-host player upgrade persistence on level transition |
+| **1.1.1** | Minor bug fixes |
+| **1.1.0** | Added upgrade reapplication system for level transitions |
+| **1.0.0** | Initial release with 13 upgrade sharing support |
