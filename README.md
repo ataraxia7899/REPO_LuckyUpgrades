@@ -110,6 +110,7 @@ ChanceToActivatePlayerEnergy = 25
 
 | Version | Changes |
 | :--- | :--- |
+| **1.1.6** | Session upgrade data now clears on return to Main Menu / Lobby. Added failure log for missed shared upgrades |
 | **1.1.5** | Fixed host upgrade duplication bug on level transition |
 | **1.1.4** | Added Quick Guide image to README |
 | **1.1.3** | Documentation update |

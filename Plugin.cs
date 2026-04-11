@@ -19,7 +19,7 @@ public class Plugin : BaseUnityPlugin
 
     private static bool _isApplyingSharedUpgrade = false;
     private static readonly System.Random _random = new System.Random();
-    private static string _mySteamID = null;
+    internal static string _mySteamID = null;
 
     // Dictionary to track shared upgrades for reapplication
     internal static readonly Dictionary<string, int> _sharedUpgrades = new Dictionary<string, int>();
@@ -359,12 +359,17 @@ public class Plugin : BaseUnityPlugin
                     _isApplyingSharedUpgrade = true;
                     applyToSelf(amount);
                     TrackSharedUpgrade(upgradeType, amount);
-                    Logger.LogInfo($"[LuckyUpgrades] Shared upgrade applied: {upgradeType} +{amount} (roll: {roll} < {shareChance})");
+                    Logger.LogInfo($"[LuckyUpgrades] Shared upgrade applied: {upgradeType} +{amount} (rolled: {roll} | chance: {shareChance}%) ✓");
                 }
                 finally
                 {
                     _isApplyingSharedUpgrade = false;
                 }
+            }
+            else
+            {
+                // 확률 실패 시 로그
+                Logger.LogInfo($"[LuckyUpgrades] Shared upgrade missed: {upgradeType} (rolled: {roll} | chance: {shareChance}%) ✗");
             }
         }
         catch (Exception ex)
@@ -379,6 +384,13 @@ public class Plugin : BaseUnityPlugin
 /// </summary>
 public class UpgradeReapplyRunner : MonoBehaviour
 {
+    // 세션 종료로 판정할 레벨 이름 목록 (정확한 이름만 사용, Contains 미사용)
+    private static readonly HashSet<string> SESSION_END_LEVELS = new HashSet<string>
+    {
+        "Level - Main Menu",
+        "Level - Lobby Menu"
+    };
+
     private string _lastLevelName = "";
     private float _reapplyDelay = 0f;
     private bool _pendingReapply = false;
@@ -400,13 +412,22 @@ public class UpgradeReapplyRunner : MonoBehaviour
             // Ignore errors when RunManager is not available
         }
 
-        // Detect level change
+        // 레벨 변경 감지
         if (!string.IsNullOrEmpty(currentLevel) && currentLevel != _lastLevelName)
         {
             Plugin.Logger.LogInfo($"[LuckyUpgrades] Level changed: {_lastLevelName} -> {currentLevel}");
             _lastLevelName = currentLevel;
-            
-            // Schedule reapply after delay (to wait for player spawn)
+
+            // 세션 종료 레벨(메인메뉴/로비)로 이동 시 모든 추적 데이터 초기화
+            if (SESSION_END_LEVELS.Contains(currentLevel))
+            {
+                Plugin._sharedUpgrades.Clear();
+                Plugin._mySteamID = null;
+                Plugin.Logger.LogInfo("[LuckyUpgrades] Session ended. All tracked data cleared.");
+                return;
+            }
+
+            // 인게임 레벨 진입 시 재적용 스케줄
             if (Plugin._sharedUpgrades.Count > 0)
             {
                 _pendingReapply = true;
