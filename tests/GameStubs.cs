@@ -19,6 +19,7 @@ namespace Photon.Pun {
 namespace BepInEx.Logging {
     public class ManualLogSource {
         public void LogInfo(object message) { }
+        public void LogWarning(object message) { }
         public void LogError(object message) => throw new Exception(message.ToString());
     }
 }
@@ -75,8 +76,15 @@ public class RunManager {
 }
 public class StatsManager {
     public static StatsManager instance = new();
-    public Dictionary<string, Dictionary<string, int>> dictionaryOfDictionaries =
-        SharedUpgradeSync.StatNames.Values.ToDictionary(name => name, name => new Dictionary<string, int>());
+    // v0.5.1 changed this field from Dictionary to internal SortedDictionary.
+    internal SortedDictionary<string, Dictionary<string, int>> dictionaryOfDictionaries =
+        new(SharedUpgradeSync.StatNames.Values.ToDictionary(name => name, name => new Dictionary<string, int>()));
+    public bool FailDiagnostics;
+    public Dictionary<string, int> FetchPlayerUpgrades(string steamID) {
+        if (FailDiagnostics) throw new MissingMethodException("Simulated diagnostics API failure");
+        return dictionaryOfDictionaries.Where(entry => entry.Value.ContainsKey(steamID))
+            .ToDictionary(entry => entry.Key, entry => entry.Value[steamID]);
+    }
 }
 public class PunManager {
     public static PunManager instance = new();

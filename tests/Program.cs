@@ -109,6 +109,48 @@ Reset();
 Share();
 Level("Level - Lobby Menu", runner);
 Equal(0, Plugin._sharedUpgrades.Count, "lobby menu resets bonus");
+
+// Diagnostics failures must not prevent the item's completion/sound callback.
+Reset();
+StatsManager.instance.FailDiagnostics = true;
+bool completed = false;
+Share();
+completed = true;
+Equal(1, completed ? 1 : 0, "item completes even when diagnostics API fails");
+Equal(1, Count(), "sharing still applies when diagnostics API fails");
+Equal(1, Plugin._sharedUpgrades["GrabStrength"], "bonus tracked without diagnostics");
+Sync(Snapshot("GrabStrength", 0));
+Equal(1, Count(), "host sync continues without diagnostics");
+
+// The user's host log failed even for self-acquired upgrades. Exercise every hook.
+foreach (string type in SharedUpgradeSync.StatNames.Keys) {
+    Reset();
+    PhotonNetwork.IsMasterClient = true;
+    typeof(PunManager).GetMethod(Methods[type]).Invoke(PunManager.instance, new object[] { "guest", 1 });
+    Equal(1, Count(type), type + " host consumes exactly once");
+    Equal(0, Plugin._sharedUpgrades.Count, type + " self purchase not shared recursively");
+}
+
+// A malformed bonus snapshot must leave vanilla RPC processing available.
+Reset();
+Share();
+var malformed = Snapshot("GrabStrength", 0);
+((Hashtable)malformed["playerUpgradeStrength"])["guest"] = "invalid";
+var originalMalformed = malformed;
+Plugin.ReceiveSyncData_Prefix(ref malformed, new PhotonMessageInfo { Sender = PhotonNetwork.MasterClient }, out bool didMerge);
+Equal(0, didMerge ? 1 : 0, "failed merge reports no mutation");
+Equal(1, ReferenceEquals(originalMalformed, malformed) ? 1 : 0, "failed merge preserves original RPC payload");
+
+// Inspect the production DLL, built against the old game reference package.
+// This catches binary references that source-only stand-ins cannot detect.
+if (args.Length > 0) {
+    using var dll = File.OpenRead(args[0]);
+    using var pe = new System.Reflection.PortableExecutable.PEReader(dll);
+    var metadata = System.Reflection.Metadata.PEReaderExtensions.GetMetadataReader(pe);
+    var members = metadata.MemberReferences.Select(handle => metadata.GetMemberReference(handle)).ToArray();
+    Equal(0, members.Count(member => metadata.GetString(member.Name) == "dictionaryOfDictionaries"), "production DLL has no incompatible field reference");
+    Equal(1, members.Any(member => metadata.GetString(member.Name) == "FetchPlayerUpgrades") ? 1 : 0, "production DLL uses public upgrade API");
+}
 Console.WriteLine($"PASS: {assertions} assertions, including all 13 upgrade types.");
 
 static partial class Program {

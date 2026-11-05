@@ -75,12 +75,19 @@ public class Plugin : BaseUnityPlugin
         if (!PhotonNetwork.InRoom || PhotonNetwork.IsMasterClient ||
             sender != PhotonNetwork.MasterClient || _sharedUpgrades.Count == 0 || __0 == null) return;
 
-        LogSyncedStats(__0, "before");
-        var data = new ExitGames.Client.Photon.Hashtable();
-        foreach (var entry in __0) data[entry.Key] = entry.Value;
-        SharedUpgradeSync.Merge(data, GetMySteamID(), _sharedUpgrades, message => Logger.LogInfo(message));
-        __0 = data;
-        __state = true;
+        try
+        {
+            LogSyncedStats(__0, "before");
+            var data = new ExitGames.Client.Photon.Hashtable();
+            foreach (var entry in __0) data[entry.Key] = entry.Value;
+            SharedUpgradeSync.Merge(data, GetMySteamID(), _sharedUpgrades, message => Logger.LogInfo(message));
+            __0 = data;
+            __state = true;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning($"[LuckyUpgrades] Could not merge shared bonuses; continuing host sync: {ex.Message}");
+        }
     }
 
     [HarmonyPatch(typeof(PunManager), "ReceiveSyncData")]
@@ -98,12 +105,31 @@ public class Plugin : BaseUnityPlugin
         {
             if (!SharedUpgradeSync.StatNames.TryGetValue(upgrade.Key, out string statName) ||
                 !data.ContainsKey(statName)) continue;
-            if (StatsManager.instance.dictionaryOfDictionaries.TryGetValue(statName, out var stats))
-            {
-                int value = stats.TryGetValue(myID, out int current) ? current : 0;
-                Logger.LogInfo($"[LuckyUpgrades] Sync {phase} {upgrade.Key}: actual={value}");
-            }
+            int? value = TryReadUpgradeCount(myID, statName);
+            Logger.LogInfo($"[LuckyUpgrades] Sync {phase} {upgrade.Key}: actual={value?.ToString() ?? "unavailable"}");
         }
+    }
+
+    private static int? TryReadUpgradeCount(string steamID, string statName)
+    {
+        try
+        {
+            return ReadUpgradeCount(steamID, statName);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning($"[LuckyUpgrades] Stat diagnostics unavailable: {ex.Message}");
+            return null;
+        }
+    }
+
+    // Keep API resolution inside the caller's exception boundary. A diagnostics
+    // failure must never interrupt the game's item consumption RPC.
+    [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+    private static int ReadUpgradeCount(string steamID, string statName)
+    {
+        var upgrades = StatsManager.instance.FetchPlayerUpgrades(steamID);
+        return upgrades.TryGetValue(statName, out int value) ? value : 0;
     }
 
     /// <summary>
@@ -301,12 +327,11 @@ public class Plugin : BaseUnityPlugin
                 {
                     _isApplyingSharedUpgrade = true;
                     string statName = SharedUpgradeSync.StatNames[upgradeType];
-                    var stats = StatsManager.instance.dictionaryOfDictionaries[statName];
-                    int before = stats.TryGetValue(mySteamID, out int previous) ? previous : 0;
+                    int? before = TryReadUpgradeCount(mySteamID, statName);
                     applyToSelf(amount);
-                    int after = stats.TryGetValue(mySteamID, out int current) ? current : 0;
-                    Logger.LogInfo($"[LuckyUpgrades] Share {upgradeType}: before={before}, after={after}");
-                    int applied = after - before;
+                    int? after = TryReadUpgradeCount(mySteamID, statName);
+                    Logger.LogInfo($"[LuckyUpgrades] Share {upgradeType}: before={before?.ToString() ?? "unavailable"}, after={after?.ToString() ?? "unavailable"}");
+                    int applied = before.HasValue && after.HasValue ? after.Value - before.Value : amount;
                     if (applied <= 0) return;
                     TrackSharedUpgrade(upgradeType, applied);
                     Logger.LogInfo($"[LuckyUpgrades] Shared upgrade applied: {upgradeType} +{applied} (rolled: {roll} | chance: {shareChance}%) ✓");
