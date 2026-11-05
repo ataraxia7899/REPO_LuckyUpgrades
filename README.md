@@ -110,8 +110,7 @@ ChanceToActivatePlayerEnergy = 25
 
 | Version | Changes |
 | :--- | :--- |
-| **1.1.9** | Fix v0.5.1 MissingFieldException during item use by using the public upgrade query API. Keep item consumption and sync running if diagnostics fail |
-| **1.1.8** | Merge guest-only shared bonuses into host stat snapshots to prevent repeated bonuses on level changes. Add stat diagnostics and regression coverage |
+| **1.1.7** | Prevent repeated guest bonuses on level changes. Use the public upgrade query API for v0.5.1 compatibility, protect item consumption from diagnostics failures, and add stat diagnostics and regression coverage |
 | **1.1.6** | Session upgrade data now clears on return to Main Menu / Lobby. Added failure log for missed shared upgrades |
 | **1.1.5** | Fixed host upgrade duplication bug on level transition |
 | **1.1.4** | Added Quick Guide image to README |
