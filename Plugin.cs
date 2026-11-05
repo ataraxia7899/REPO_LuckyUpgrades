@@ -21,7 +21,7 @@ public class Plugin : BaseUnityPlugin
     private static readonly System.Random _random = new System.Random();
     internal static string _mySteamID = null;
 
-    // Dictionary to track shared upgrades for reapplication
+    // Guest-only bonuses to merge into authoritative host snapshots
     internal static readonly Dictionary<string, int> _sharedUpgrades = new Dictionary<string, int>();
 
     private Harmony harmony;
@@ -62,104 +62,47 @@ public class Plugin : BaseUnityPlugin
         return _mySteamID;
     }
 
-    /// <summary>
-    /// Reapplies all tracked shared upgrades.
-    /// </summary>
-    internal static void ReapplySharedUpgrades()
+    // Merge guest-only bonuses into host snapshots, once per received dictionary.
+    [HarmonyPatch(typeof(PunManager), "ReceiveSyncData")]
+    [HarmonyPrefix]
+    public static void ReceiveSyncData_Prefix(ref ExitGames.Client.Photon.Hashtable __0,
+        PhotonMessageInfo __2, out bool __state)
     {
-        if (_sharedUpgrades.Count == 0)
-        {
-            return;
-        }
+        __state = false;
+#pragma warning disable Harmony003 // PhotonMessageInfo.Sender is a struct getter, not an assignment.
+        var sender = __2.Sender;
+#pragma warning restore Harmony003
+        if (!PhotonNetwork.InRoom || PhotonNetwork.IsMasterClient ||
+            sender != PhotonNetwork.MasterClient || _sharedUpgrades.Count == 0 || __0 == null) return;
 
+        LogSyncedStats(__0, "before");
+        var data = new ExitGames.Client.Photon.Hashtable();
+        foreach (var entry in __0) data[entry.Key] = entry.Value;
+        SharedUpgradeSync.Merge(data, GetMySteamID(), _sharedUpgrades, message => Logger.LogInfo(message));
+        __0 = data;
+        __state = true;
+    }
+
+    [HarmonyPatch(typeof(PunManager), "ReceiveSyncData")]
+    [HarmonyPostfix]
+    public static void ReceiveSyncData_Postfix(ExitGames.Client.Photon.Hashtable __0, bool __state)
+    {
+        if (__state) LogSyncedStats(__0, "after");
+    }
+
+    private static void LogSyncedStats(ExitGames.Client.Photon.Hashtable data, string phase)
+    {
         string myID = GetMySteamID();
-        if (string.IsNullOrEmpty(myID))
+        if (string.IsNullOrEmpty(myID) || StatsManager.instance == null) return;
+        foreach (var upgrade in _sharedUpgrades)
         {
-            return;
-        }
-
-        Logger.LogInfo($"[LuckyUpgrades] Reapplying {_sharedUpgrades.Count} upgrade types...");
-
-        try
-        {
-            _isApplyingSharedUpgrade = true;
-
-            foreach (var upgrade in _sharedUpgrades)
+            if (!SharedUpgradeSync.StatNames.TryGetValue(upgrade.Key, out string statName) ||
+                !data.ContainsKey(statName)) continue;
+            if (StatsManager.instance.dictionaryOfDictionaries.TryGetValue(statName, out var stats))
             {
-                string upgradeType = upgrade.Key;
-                int amount = upgrade.Value;
-
-                if (amount <= 0) continue;
-
-                try
-                {
-                    switch (upgradeType)
-                    {
-                        case "Health":
-                            for (int i = 0; i < amount; i++)
-                                PunManager.instance.UpgradePlayerHealth(myID, 1);
-                            break;
-                        case "Energy":
-                            for (int i = 0; i < amount; i++)
-                                PunManager.instance.UpgradePlayerEnergy(myID, 1);
-                            break;
-                        case "ExtraJump":
-                            for (int i = 0; i < amount; i++)
-                                PunManager.instance.UpgradePlayerExtraJump(myID, 1);
-                            break;
-                        case "GrabRange":
-                            for (int i = 0; i < amount; i++)
-                                PunManager.instance.UpgradePlayerGrabRange(myID, 1);
-                            break;
-                        case "GrabStrength":
-                            for (int i = 0; i < amount; i++)
-                                PunManager.instance.UpgradePlayerGrabStrength(myID, 1);
-                            break;
-                        case "GrabThrow":
-                            for (int i = 0; i < amount; i++)
-                                PunManager.instance.UpgradePlayerThrowStrength(myID, 1);
-                            break;
-                        case "SprintSpeed":
-                            for (int i = 0; i < amount; i++)
-                                PunManager.instance.UpgradePlayerSprintSpeed(myID, 1);
-                            break;
-                        case "TumbleLaunch":
-                            for (int i = 0; i < amount; i++)
-                                PunManager.instance.UpgradePlayerTumbleLaunch(myID, 1);
-                            break;
-                        case "MapPlayerCount":
-                            for (int i = 0; i < amount; i++)
-                                PunManager.instance.UpgradeMapPlayerCount(myID, 1);
-                            break;
-                        case "TumbleClimb":
-                            for (int i = 0; i < amount; i++)
-                                PunManager.instance.UpgradePlayerTumbleClimb(myID, 1);
-                            break;
-                        case "TumbleWings":
-                            for (int i = 0; i < amount; i++)
-                                PunManager.instance.UpgradePlayerTumbleWings(myID, 1);
-                            break;
-                        case "CrouchRest":
-                            for (int i = 0; i < amount; i++)
-                                PunManager.instance.UpgradePlayerCrouchRest(myID, 1);
-                            break;
-                        case "DeathHeadBattery":
-                            for (int i = 0; i < amount; i++)
-                                PunManager.instance.UpgradeDeathHeadBattery(myID, 1);
-                            break;
-                    }
-
-                    Logger.LogInfo($"[LuckyUpgrades] Reapplied: {upgradeType} +{amount}");
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError($"[LuckyUpgrades] Error reapplying {upgradeType}: {ex.Message}");
-                }
+                int value = stats.TryGetValue(myID, out int current) ? current : 0;
+                Logger.LogInfo($"[LuckyUpgrades] Sync {phase} {upgrade.Key}: actual={value}");
             }
-        }
-        finally
-        {
-            _isApplyingSharedUpgrade = false;
         }
     }
 
@@ -343,7 +286,7 @@ public class Plugin : BaseUnityPlugin
     {
         try
         {
-            if (_isApplyingSharedUpgrade) return;
+            if (_isApplyingSharedUpgrade || amount <= 0) return;
 
             string mySteamID = GetMySteamID();
             if (string.IsNullOrEmpty(mySteamID)) return;
@@ -357,9 +300,16 @@ public class Plugin : BaseUnityPlugin
                 try
                 {
                     _isApplyingSharedUpgrade = true;
+                    string statName = SharedUpgradeSync.StatNames[upgradeType];
+                    var stats = StatsManager.instance.dictionaryOfDictionaries[statName];
+                    int before = stats.TryGetValue(mySteamID, out int previous) ? previous : 0;
                     applyToSelf(amount);
-                    TrackSharedUpgrade(upgradeType, amount);
-                    Logger.LogInfo($"[LuckyUpgrades] Shared upgrade applied: {upgradeType} +{amount} (rolled: {roll} | chance: {shareChance}%) ✓");
+                    int after = stats.TryGetValue(mySteamID, out int current) ? current : 0;
+                    Logger.LogInfo($"[LuckyUpgrades] Share {upgradeType}: before={before}, after={after}");
+                    int applied = after - before;
+                    if (applied <= 0) return;
+                    TrackSharedUpgrade(upgradeType, applied);
+                    Logger.LogInfo($"[LuckyUpgrades] Shared upgrade applied: {upgradeType} +{applied} (rolled: {roll} | chance: {shareChance}%) ✓");
                 }
                 finally
                 {
@@ -380,7 +330,7 @@ public class Plugin : BaseUnityPlugin
 }
 
 /// <summary>
-/// Separate MonoBehaviour to detect level changes and reapply upgrades.
+/// Detect session boundaries and clear guest-only bonuses.
 /// </summary>
 public class UpgradeReapplyRunner : MonoBehaviour
 {
@@ -392,10 +342,6 @@ public class UpgradeReapplyRunner : MonoBehaviour
     };
 
     private string _lastLevelName = "";
-    private float _reapplyDelay = 0f;
-    private bool _pendingReapply = false;
-    private const float REAPPLY_DELAY_SECONDS = 3f;
-
     private void Update()
     {
         // Get current level name from RunManager
@@ -425,42 +371,6 @@ public class UpgradeReapplyRunner : MonoBehaviour
                 Plugin._mySteamID = null;
                 Plugin.Logger.LogInfo("[LuckyUpgrades] Session ended. All tracked data cleared.");
                 return;
-            }
-
-            // 인게임 레벨 진입 시 재적용 스케줄
-            if (Plugin._sharedUpgrades.Count > 0)
-            {
-                _pendingReapply = true;
-                _reapplyDelay = REAPPLY_DELAY_SECONDS;
-                Plugin.Logger.LogInfo($"[LuckyUpgrades] Scheduled reapply in {REAPPLY_DELAY_SECONDS}s...");
-            }
-        }
-
-        // Handle pending reapply with countdown
-        if (_pendingReapply)
-        {
-            _reapplyDelay -= Time.deltaTime;
-            if (_reapplyDelay <= 0f)
-            {
-                _pendingReapply = false;
-                
-                // 호스트(MasterClient)인 경우 재적용 건너뛰기
-                // 호스트는 공유 업그레이드가 서버에 저장되어 레벨 전환 시에도 유지됨
-                if (PhotonNetwork.IsMasterClient)
-                {
-                    Plugin.Logger.LogInfo("[LuckyUpgrades] Host detected, skipping reapply (upgrades persist on host)");
-                    return;
-                }
-                
-                var localPlayer = SemiFunc.PlayerAvatarLocal();
-                if (localPlayer != null)
-                {
-                    string myID = Plugin.GetMySteamID();
-                    if (!string.IsNullOrEmpty(myID))
-                    {
-                        Plugin.ReapplySharedUpgrades();
-                    }
-                }
             }
         }
     }
